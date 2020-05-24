@@ -1,10 +1,10 @@
 var stop = 1;
 
-var star_sizes = [30, 25, 20, 15, 10];
-var star_colors = ["#aaaaff", "#aaffaa", "#ffaaaa", "#ffffaa", "#aaffff"];
-var star_vx = [5, 4.5, 4.0, 3.5, 3.0];
-var star_vy = [10, 9, 8, 7, 6];
-var num_stars = 5;
+var star_sizes = [30, 25, 20, 15, 10, 5, 5];
+var star_colors = ["#33ceff", "#64ff33", "#ffaaaa", "#FFB233", "#aaffff", "#339fff"];
+var star_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
+var star_vy = [10, 9, 8, 7, 6, 5];
+var num_stars = 6;
 
 var canvas_height = 0;
 var canvas_width = 0;
@@ -106,6 +106,7 @@ function drawOnce(){
     
     // calculate
     var i = 0;
+    outofbound = 0;
     for (i = 0; i < num_stars; ++i){
         var star = stars[i];
         star.tickOnce();

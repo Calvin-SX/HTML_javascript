@@ -1,7 +1,7 @@
 var stop = 1;
 
 var star_sizes = [30, 25, 20, 15, 10, 5, 5];
-var star_colors = ["#33ceff", "#64ff33", "#ffaaaa", "#FFB233", "#aaffff", "#339fff"];
+var star_colors = ["#fa695d", "#fcac5d", "#fcfa5d", "#a8fc5d", "#5dd6fc", "#ffabe9"];
 var star_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
 var star_vy = [10, 9, 8, 7, 6, 5];
 var num_stars = 6;
@@ -36,9 +36,15 @@ class Star {
             outofbound += 1;
             return;
         }
-        var center_x = this.x + this.sz/2;
-        var center_y = this.y + this.sz/2;
-        var radius = this.sz/2;
+        
+        var sz = 5;
+        if (this.tic_count >= 50){
+            sz = this.sz;
+        }
+        
+        var center_x = this.x + sz/2;
+        var center_y = this.y + sz/2;
+        var radius = sz/2;
         
         //ctx.beginPath();
         var region = new Path2D();
@@ -67,6 +73,7 @@ class Star {
         
         ctx.fillStyle = this.color;
         ctx.fill(region, 'nonzero');
+        
     }
     drawTrack(ctx){
         // recompute x and y
@@ -132,11 +139,11 @@ function drawOnce(){
     grd.addColorStop(1, "#888888");
 
     
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    //ctx.fillStyle = grd;
+    //ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     ctx.font = "100px Arial";
-    ctx.fillStyle = "#ffaaff";
+    ctx.fillStyle = "#fa9eb8";
     ctx.fillText("Happy Birthday", 80, canvas.height - 50);
     
     // calculate
