@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>Derivative</title>
+		
+        <link rel="stylesheet" href="style/styles.css">
+		
+	</head>
+	<body>
+        <h1>
+            <center> The Cumulative Standardized Normal Distribution </center>
+        </h1>
+        <div>
+<script src="javascript/plot.js" type="text/javascript" charset="utf-8"></script>
+            <center>
+            <table class='blueTable'>
+                <tr>
+                    <th>Z</th>
+                    <th>Z-Table proximity</th>
+                    <th>Cumulative Probability</th>
+                </tr>
+                <tr>
+                    <td>
+                        Z min: <input id="xmin" type="text" value = "-6.0" size="10" style="text-align:right;">
+                    </td>
+                    <td>
+                        <label id='leftzmin'>-4.00:</label>
+                        <input type='text' size='8' disabled id='zminleft' style="text-align:right;">
+                        <input type='range' id='minRange' disabled min='0.0' max='1.0' step='0.01'>
+                        <label id='rightzmin'>-3.98:</label>
+                        <input type='text' size='8' disabled id='zminright' style="text-align:right;">
+                    </td>
+                    <td>
+                        <input type='text' size='15' disabled id='zmin' style="text-align:right;">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Z max: <input id="xmax" type="text" value = "6.0"size="10" style="text-align:right;">
+                    </td>
+                    <td>
+                        <label id='leftzmax'>3.98:</label>
+                        <input type='text' size='8' disabled id='zmaxleft' style="text-align:right;">
+                        <input type='range' id='maxRange' disabled min='0.0' max='1.0' step='0.01'>
+                        <label id='rightzmax'>4.00:</label>
+                        <input type='text' size='8' disabled id='zmaxright' style="text-align:right;">
+                    </td>
+                    <td>
+                        <input type='text' size='15' disabled id='zmax' style="text-align:right;">
+                    </td>
+                </tr>
+            </table>
+            <center>
+                <input type="button" class="myButton" name="eval" value="Lookup" onclick="lookupZtable()">
+            </center>
+            </center>
+            <center>
+                <canvas id="plotCanvas" width="678" height="300" style="border:1px solid lightgray; background: url('https://drive.google.com/uc?export=view&id=1fqwjHvfkSDKxt7265JhNAv_KZKcpqzxb')"></canvas>
+            </center>
+
+        </div>
+	</body>
+</html>
