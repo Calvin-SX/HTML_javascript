@@ -86,12 +86,15 @@ class Vir {
         ctx.lineWidth = 2;
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
+        // red
+        ctx.strokeStyle = '#770000';
         ctx.stroke();
 
         ctx.beginPath();
         ctx.lineWidth = 5;
         ctx.moveTo(x2, y2);
         ctx.lineTo(x3, y3);
+        ctx.strokeStyle = '#770000';
         ctx.stroke();
     }
     drawDots(ctx){
@@ -99,15 +102,15 @@ class Vir {
     }
     drawDots(ctx, alpha){
         var sz = 4;
+        ctx.fillStyle = '#770000';
         ctx.beginPath();
+        ctx.globalAlpha = 1.0;
         ctx.fillRect(this.cx-sz/2, this.cy-sz/2, sz, sz);
         ctx.fillRect(this.cx-sz/2 - this.r/3, this.cy-sz/2 - this.r/3, sz, sz);
         ctx.fillRect(this.cx-sz/2 - this.r/3, this.cy-sz/2 + this.r/3, sz, sz);
         ctx.fillRect(this.cx-sz/2 + this.r/3, this.cy-sz/2 - this.r/3, sz, sz);
         ctx.fillRect(this.cx-sz/2 + this.r/3, this.cy-sz/2 + this.r/3, sz, sz);
-
-        
-        ctx.stroke();
+        ctx.fill();
     }
 
     draw(ctx, x, y){
@@ -117,18 +120,18 @@ class Vir {
     draw(ctx, x, y, alpha){
         this.cx =  x;
         this.cy = y;
+        ctx.fillStyle = '#ff0000';
         ctx.beginPath();
         ctx.lineWidth = 1;
-        
         ctx.globalAlpha = alpha;
         ctx.arc(x, y, this.r, 0, 2*Math.PI);
-        ctx.stroke();
+        ctx.fill();
         for (var i = 0; i < 12; i++){
             var theta = i*Math.PI/6; // 30 degrees = PI/6
             this.drawTick(ctx, theta);
         }
 
-        this.drawDots(ctx);
+        this.drawDots(ctx, alpha);
     }
 
     drawExposed(ctx, x, y, scale, alpha){
@@ -172,7 +175,7 @@ class Inject {
 
         ctx.moveTo(x-bw/2-1, y -nl - bl - tl);
         ctx.lineTo(x+bw/2+1, y -nl - bl - tl)
-
+        ctx.strokeStyle = '#000000'
         ctx.stroke();
     }
 }
@@ -193,6 +196,7 @@ class Launcher {
         ctx.lineWidth = 1;
         ctx.moveTo(0, Game.ground);
         ctx.lineTo(1000, Game.ground);
+        ctx.strokeStyle = '#000000'
         ctx.stroke();
     }
 
@@ -200,12 +204,14 @@ class Launcher {
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.arc(0, Game.ground, Game.launcherR, 1.5*Math.PI, 2*Math.PI);
+        ctx.strokeStyle = '#000000'
         ctx.stroke();
 
         ctx.beginPath();
         ctx.lineWidth = 5;
         ctx.moveTo(0, Game.ground);
         ctx.lineTo(this.x, this.y);
+        ctx.strokeStyle = '#000000'
         ctx.stroke();
     }
 
@@ -222,7 +228,8 @@ class Game {
     static sMissed  = 3;
     static sDone    = -1;
     static ground   = 500;
-    static launcherR= 30;
+    static launcherR= 50;
+    static vRatio   = 6.5;
 
     constructor(){
         this.virX       = 200;
@@ -261,19 +268,19 @@ class Game {
 
     startGame(ctx){
         this.mode = Game.sStart;
+        this.lau.set(0, Game.ground);
+        this.lau.draw(ctx);
         this.vir.r = this.virSz;
         this.virCounter = 0;
         this.virX = this.randomX();
         this.vir.draw(ctx, this.virX, Game.ground);
-        this.lau.set(0, Game.ground);
-        this.lau.draw(ctx);
     }
 
     launch(ctx, x, y){
         this.injX = x;
         this.injY = y;
-        this.vX = x/2;
-        this.vY = (y - Game.ground)/2;
+        this.vX = x/Game.vRatio;
+        this.vY = (y - Game.ground)/Game.vRatio;
 
         this.lau.set(x, y);
 
@@ -287,6 +294,13 @@ class Game {
         this.injY += this.vY;
     }
 
+    showText(ctx, str){
+        var x = w/2;
+        ctx.font = "30px Arial";
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#000088';
+        ctx.fillText(str, x, Game.ground + 50);
+    }
 
     tickOnce(){
         var ctx = this.getClearCtx();
@@ -302,11 +316,16 @@ class Game {
                     // reset exp counter
                     this.virCounter = 0;
                     this.mode = Game.sHit;
+                    this.showText(ctx, 'Hit');
                 }
                 else {
                     this.mode = Game.sMissed;
-                    //this.mode = Game.sHit;
                 }
+            }
+            else if (this.injX >= w) {
+                // out of scope
+                this.mode = Game.sMissed;
+                this.showText(ctx, 'Missed');
             }
             else if (this.injY >= Game.ground - this.virSz && Math.abs(this.injX - this.virX) < this.virSz/2){
                 // reset exp counter
@@ -315,7 +334,7 @@ class Game {
             }
         }
         else if (this.mode == Game.sHit){
-
+            this.showText(ctx, 'Hit');
             if (this.virCounter == 0){
                 this.vir.drawExposed(ctx, this.virX, Game.ground, 0.8, 1.0);
             }
@@ -330,6 +349,7 @@ class Game {
             this.virCounter += 1;
         }
         else if (this.mode == Game.sMissed){
+            this.showText(ctx, 'Missed');
             this.mode = Game.sStart;
             this.lau.set(0, Game.gound);
             this.vir.draw(ctx, this.virX, Game.ground);
@@ -348,83 +368,4 @@ function start(){
     var ctx = c.getContext('2d');
 
     theGame.startGame(ctx);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class Firework{
-    constructor(sz, color, x, y, vx, vy){
-        this.sz = sz;
-        this.color = color;
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-        this.tic_count = 0;
-        this.draw_size = 5;
-        this.top = this.vy/g/2;
-    }
-    tickOnce(){
-        this.tic_count += 1;
-        this.x = this.vx*this.tic_count;
-        this.y = canvas_height  - (this.vy - g*this.tic_count) * this.tic_count;
-        this.sz *= zoom;
-        
-        // Draw_size is constant 5 before reaching the top.
-        // Change to this.sz after that.
-        this.draw_size = 5;
-        if (this.tic_count > 0)
-        {
-            if (this.tic_count >= this.top){
-                this.draw_size = this.sz;
-            }
-        }
-    }
-    drawTrack(ctx){
-        // recompute x and y
-        ctx.beginPath();
-        var x = 0;
-        var y = 0;
-        var tic_count = 0;
-        // start the track 20 points before the current location
-        var start = this.tic_count - 20;
-        if (start < 0){
-            start = 0;
-        }
-        x = this.vx*start;
-        y = canvas_height  - (this.vy - 0.05*start) * start;
-        ctx.moveTo(x, y);
-        for (tic_count = start + 1; tic_count < this.tic_count; ++tic_count){
-            x = this.vx*tic_count;
-            y = canvas_height  - (this.vy - 0.05*tic_count) * tic_count;
-            ctx.lineTo(x, y);
-            ctx.moveTo(x, y);
-        }
-        ctx.strokeStyle = this.color;
-        ctx.stroke();
-    }
 }
