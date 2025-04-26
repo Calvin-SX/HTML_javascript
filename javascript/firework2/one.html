@@ -1,0 +1,416 @@
+<html>
+	<head>
+
+
+		
+	</head>
+<div style="background-color: #fef8ff">
+<script>
+g = 0.05; // simulate gravity
+class Firework{
+    constructor(sz, color, x, y, vx, vy){
+        this.sz = sz;
+        this.color = color;
+        this.x = x;
+        this.y = y;
+        this.vx = vx;
+        this.vy = vy;
+        this.tic_count = 0;
+        this.draw_size = 5;
+        this.top = this.vy/g/2;
+    }
+    tickOnce(){
+        this.tic_count += 1;
+        this.x = this.vx*this.tic_count;
+        this.y = canvas_height  - (this.vy - g*this.tic_count) * this.tic_count;
+        this.sz *= zoom;
+        
+        // Draw_size is constant 5 before reaching the top.
+        // Change to this.sz after that.
+        this.draw_size = 5;
+        if (this.tic_count > 0)
+        {
+            if (this.tic_count >= this.top){
+                this.draw_size = this.sz;
+            }
+        }
+    }
+    drawTrack(ctx){
+        // recompute x and y
+        ctx.beginPath();
+        var x = 0;
+        var y = 0;
+        var tic_count = 0;
+        // start the track 20 points before the current location
+        var start = this.tic_count - 20;
+        if (start < 0){
+            start = 0;
+        }
+        x = this.vx*start;
+        y = canvas_height  - (this.vy - 0.05*start) * start;
+        ctx.moveTo(x, y);
+        for (tic_count = start + 1; tic_count < this.tic_count; ++tic_count){
+            x = this.vx*tic_count;
+            y = canvas_height  - (this.vy - 0.05*tic_count) * tic_count;
+            ctx.lineTo(x, y);
+            ctx.moveTo(x, y);
+        }
+        ctx.strokeStyle = this.color;
+        ctx.stroke();
+    }
+}
+
+</script>
+
+<script>
+var star_sizes = [30, 25, 20, 15, 10, 5];
+//var star_colors = ["#f0457e", "#96d7cb", "#fcfa5d", "#a8fc5d", "#5dd6fc", "#ffabe9"];
+var star_colors = ["#dc1915", "#c79757", "#ebd6c1", "#acb1c5", "#855a49", "#ffabe9"];
+var star_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
+var star_vy = [10, 9, 8, 7, 6, 5];
+var num_stars = 6;
+
+class Star extends Firework{
+    // factory method
+    static getStars(){
+        var stars = [];
+        var i = 0;
+        for (i = 0; i < star_sizes.length; ++i){
+            stars.push(new Star(star_sizes[i], star_colors[i], 0, canvas_height, star_vx[i], star_vy[i]));
+        }
+        return stars;
+    }
+    
+    draw(ctx){
+        if (this.x > canvas_width || this.y > canvas_height){
+            outofbound += 1;
+            return;
+        }
+        
+        var center_x = this.x + this.draw_size/2;
+        var center_y = this.y + this.draw_size/2;
+        var radius = this.draw_size/2;
+        
+        //ctx.beginPath();
+        var region = new Path2D();
+        
+        var num_corners = 5;
+        var delta = 2*PI*2/num_corners;
+        
+        var theta = -PI/2;
+        var from_x = radius * Math.cos(theta) + center_x;
+        var from_y = radius * Math.sin(theta) + center_y;
+        
+        region.moveTo(from_x, from_y);
+        
+        var i = 0;
+        for (i = 0; i < num_corners; ++i)
+        {
+            theta += delta;
+            var to_x = radius * Math.cos(theta) + center_x;
+            var to_y = radius * Math.sin(theta) + center_y;
+            
+            region.lineTo(to_x, to_y);
+            from_x = to_x;
+            from_y = to_y;
+        }
+        region.closePath();
+        
+        ctx.fillStyle = this.color;
+        ctx.fill(region, 'nonzero');
+        
+    }
+}
+</script>
+<script>
+var note_sizes = [30, 25, 20, 15, 10, 5];
+//var note_colors = ["#f596aa", "#f05e1c", "#ffb11b", "#66bab7", "#81c7d4","#9b90c2"];
+var note_colors = ["#e7739a", "#fec4dd", "#e8e5d2", "#0caaa8", "#007f9f","#ffc408"];
+var note_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
+var note_vy = [10, 9, 8, 7, 6, 5];
+var num_notes = note_colors.length;
+
+class musicNote extends Firework{
+    
+    static getNotes(){
+        var notes = [];
+        var i = 0;
+        for (i = 0; i < num_notes; ++i){
+            notes.push(new musicNote(note_sizes[i], note_colors[i], 0, canvas_height, note_vx[i], note_vy[i]));
+        }
+        return notes;
+    }
+    draw(ctx){
+        if (this.x > canvas_width || this.y > canvas_height){
+            outofbound += 1;
+            return;
+        }
+        
+        var lineWidth = this.draw_size/20;
+        if (lineWidth < 3){
+            lineWidth = 3;
+        }
+        var w = this.draw_size/2.5;
+        var h = 0.9*this.draw_size;
+        var h_delta = 0.2*this.draw_size;
+        
+        var center_x = this.x + this.draw_size/2;
+        var center_y = this.y + this.draw_size/2;
+        
+        ctx.beginPath();
+        ctx.lineWidth = lineWidth;
+        
+        var lt_x = center_x - w/2;
+        var lt_y = center_y - h/2 + h_delta;
+        var rt_x = center_x + w/2;
+        var rt_y = center_y - h/2;
+        
+        ctx.moveTo(lt_x, lt_y);
+        ctx.lineTo(rt_x, rt_y);
+        
+        ctx.moveTo(lt_x, lt_y + h_delta);
+        ctx.lineTo(rt_x, rt_y + h_delta);
+        
+        ctx.strokeStyle = this.color;
+        ctx.closePath();
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.moveTo(lt_x, lt_y);
+        ctx.lineTo(lt_x, lt_y + h - h_delta);
+        
+        ctx.moveTo(rt_x, rt_y);
+        ctx.lineTo(rt_x, rt_y + h - h_delta);
+        
+        ctx.lineWidth = 2;
+        ctx.closePath();
+        ctx.stroke();
+        
+        ctx.beginPath();
+        var xr = this.draw_size/20;
+        var yr = xr - 1;
+        if (yr <= 0) {
+            yr = xr;
+        }
+
+        ctx.ellipse(lt_x-xr, lt_y + h - h_delta, xr, yr, -Math.PI/6, 0, 2*3.1415);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.ellipse(rt_x-xr, rt_y + h - h_delta, xr, yr, -Math.PI/6, 0, 2*3.1415);
+        ctx.stroke();
+    }
+}
+
+</script>
+
+
+<script>
+var flower_sizes = [30, 25, 20, 15, 10, 5];
+var flower_colors = ["#e2b5f7", "#acc4fa", "#ffcfac", "#dbfaac", "#fafaac", "#ffabe9"];
+var flower_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
+var flower_vy = [11, 10, 9, 8, 7, 6];
+var num_flowers = flower_colors.length;
+
+var num_steps = 100;
+var center_scale = 0.14;
+var other_scale = 0.20;
+
+class Flower extends Firework{
+    // factory method
+    static getFlowers(){
+        var flowers = [];
+        var i = 0;
+        for (i = 0; i < num_flowers; ++i){
+            flowers.push(new Flower(flower_sizes[i], flower_colors[i], 0, canvas_height, flower_vx[i], flower_vy[i]));
+        }
+        return flowers;
+    }
+    drawCircle(ctx, xr, yr, radius){
+        var center_x = this.x + xr;
+        var center_y = this.y + yr;
+        
+        var region = new Path2D();
+        
+        var delta = 2*PI/num_steps;
+        var theta = 0;
+        
+        region.moveTo(center_x + radius, center_y);
+        var i = 0;
+        for ( i = 0; i < num_steps; ++i){
+            theta += delta;
+            var to_x = radius * Math.cos(theta) + center_x;
+            var to_y = radius * Math.sin(theta) + center_y;
+            region.lineTo(to_x, to_y);
+        }
+        region.closePath();
+        ctx.fillStyle = this.color;
+        ctx.fill(region, 'nonzero');
+    }
+    draw(ctx){
+        if (this.x > canvas_width || this.y > canvas_height){
+            outofbound += 1;
+            return;
+        }
+        var center_radius = this.draw_size * center_scale;
+        var other_radius = this.draw_size * other_scale;
+        
+        this.drawCircle(ctx, this.draw_size/2, this.draw_size/2, center_radius);
+        var r = center_radius + other_radius;
+        var i = 0;
+        var theta = 0;
+        var center_x = this.draw_size/2;
+        var center_y = this.draw_size/2;
+        for (i = 0; i < 5; ++i){
+            theta += 2*PI/5;
+            var c_x = center_x + r * Math.cos(theta);
+            var c_y = center_y + r * Math.sin(theta);
+            this.drawCircle(ctx, c_x, c_y, other_radius);
+        }
+        
+    }
+}
+</script>
+
+<script>
+var stop = 1;
+
+var canvas_height = 0;
+var canvas_width = 0;
+var PI = 3.1415926;
+var interval = 50;
+
+var zoom = 1.008;
+var stars = [];
+var flowers = [];
+var notes = [];
+var outofbound = 0;
+
+var alter = 0;
+var greeting = "Happy Birthday";
+var name = "to you";
+
+// Start button calls this
+function start(){
+
+    stop = 0;
+    stars = [];
+    
+    // Draw flowers and stars alternatively
+    if (alter == 0)
+    {
+        alter = 1;
+        flowers = Flower.getFlowers();
+    }
+    else if (alter == 1) {
+        alter = 2;
+        stars = Star.getStars();
+    }
+    else {
+        alter = 0;
+        notes = musicNote.getNotes();
+    }
+    
+    outofbound = 0;
+    drawOnce();
+}
+
+// Stop button calls this
+function stopDraw(){
+    stop = 1;
+}
+
+
+// ----- Utility function
+function setparams(grting, nme){
+    greeting = grting;
+    name = nme;
+}
+var textColors = ["#f4a7b9", "#8a6bbe", "#a5dee4"];
+function drawOnce(){
+    var canvas = document.getElementById("drawCanvas");
+    canvas_height = canvas.height;
+    canvas_width = canvas.width;
+    
+    var ctx = canvas.getContext("2d");
+
+    if (stop == 1){
+        // done
+        return;
+    }
+    // Always clean up whole canvas first before draw
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Create gradient
+    var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    grd.addColorStop(1, "#efe8ce");
+    grd.addColorStop(0, "#ffffff");
+
+    
+    //ctx.fillStyle = grd;
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.font = "100px Arial";
+    ctx.fillStyle = textColors[alter];
+    var message = name;
+    if (alter %2 == 1) {
+        message = greeting;
+    }
+    ctx.fillText(message, 290, canvas.height - 50);
+    
+    // calculate
+    var i = 0;
+    outofbound = 0;
+    if (alter == 2)
+    {
+        for (i = 0; i < stars.length; ++i){
+            var star = stars[i];
+            star.tickOnce();
+            star.draw(ctx);
+            star.drawTrack(ctx);
+        }
+    }
+    else if (alter == 0){
+        for (i = 0; i < notes.length; ++i){
+            var note = notes[i];
+            note.tickOnce();
+            note.draw(ctx);
+            note.drawTrack(ctx);
+        }
+    }
+    else {
+        for (i = 0; i < flowers.length; ++i){
+            var flower = flowers[i];
+            flower.tickOnce();
+            flower.draw(ctx);
+            flower.drawTrack(ctx);
+        }
+    }
+    if ((outofbound == stars.length && alter == 2) ||
+        (outofbound == flowers.length && alter == 1) ||
+        (outofbound == notes.length && alter == 0)){
+        // restart
+        start();
+        return;
+    }
+    
+    setTimeout(drawOnce, interval);
+}
+</script>
+<script>
+    setparams("Merry Christmas", "Calvin");
+    console.log("setting params");
+</script>
+		<br>
+		<br>
+		<center>
+            <canvas id="drawCanvas" width="1200" height="600"></canvas>
+        </center>
+        
+		<hr style="color: #000000; width:80%; border-width:0; height: 1px; background-color:#d0daf4">
+		<center>
+			<input type="button" style="background-color: #fef8ff; border: none; font-size: 20px; margin: 5px 2px; padding: 10px 20px; color: #775563" name="Draw" value="Start" onclick="start();">
+			<input type="button" style="background-color: #fef8ff; border: none; font-size: 20px; margin: 5px 2px; padding: 10px 20px; color: #775563" name="Pause" value="Pause" onclick="stopDraw();">
+		</center>
+<div>
+</html>

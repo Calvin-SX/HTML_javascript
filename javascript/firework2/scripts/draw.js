@@ -5,7 +5,7 @@ var canvas_width = 0;
 var PI = 3.1415926;
 var interval = 50;
 
-var zoom = 1.01;
+var zoom = 1.008;
 var stars = [];
 var flowers = [];
 var notes = [];
@@ -44,7 +44,7 @@ function stopDraw(){
 
 // ----- Utility function
 
-
+var textColors = ["#f4a7b9", "#8a6bbe", "#a5dee4"];
 function drawOnce(){
     var canvas = document.getElementById("drawCanvas");
     canvas_height = canvas.height;
@@ -61,16 +61,17 @@ function drawOnce(){
     
     // Create gradient
     var grd = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    grd.addColorStop(0, "#000000");
-    grd.addColorStop(1, "#888888");
+    grd.addColorStop(1, "#efe8ce");
+    grd.addColorStop(0, "#ffffff");
 
     
     //ctx.fillStyle = grd;
-    //ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     ctx.font = "100px Arial";
-    ctx.fillStyle = "#fa9eb8";
-    ctx.fillText("Happy Birthday", 80, canvas.height - 50);
+    ctx.fillStyle = textColors[alter];
+    ctx.fillText("Happy Birthday", 290, canvas.height - 50);
     
     // calculate
     var i = 0;

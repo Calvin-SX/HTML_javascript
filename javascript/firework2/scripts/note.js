@@ -1,5 +1,6 @@
 var note_sizes = [30, 25, 20, 15, 10, 5];
-var note_colors = ["#e2b5f7", "#acc4fa", "#fabbac", "#dbfaac", "#fafaac", "#ffabe9"];
+//var note_colors = ["#f596aa", "#f05e1c", "#ffb11b", "#66bab7", "#81c7d4","#9b90c2"];
+var note_colors = ["#e7739a", "#fec4dd", "#e8e5d2", "#0caaa8", "#007f9f","#ffc408"];
 var note_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
 var note_vy = [10, 9, 8, 7, 6, 5];
 var num_notes = note_colors.length;

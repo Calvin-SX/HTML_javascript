@@ -1,7 +1,7 @@
 var flower_sizes = [30, 25, 20, 15, 10, 5];
-var flower_colors = ["#e2b5f7", "#acc4fa", "#fabbac", "#dbfaac", "#fafaac", "#ffabe9"];
+var flower_colors = ["#e2b5f7", "#acc4fa", "#ffcfac", "#dbfaac", "#fafaac", "#ffabe9"];
 var flower_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
-var flower_vy = [10, 9, 8, 7, 6, 5];
+var flower_vy = [11, 10, 9, 8, 7, 6];
 var num_flowers = flower_colors.length;
 
 var num_steps = 100;

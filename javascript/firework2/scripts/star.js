@@ -1,5 +1,6 @@
 var star_sizes = [30, 25, 20, 15, 10, 5];
-var star_colors = ["#fa695d", "#fcac5d", "#fcfa5d", "#a8fc5d", "#5dd6fc", "#ffabe9"];
+//var star_colors = ["#f0457e", "#96d7cb", "#fcfa5d", "#a8fc5d", "#5dd6fc", "#ffabe9"];
+var star_colors = ["#dc1915", "#c79757", "#ebd6c1", "#acb1c5", "#855a49", "#ffabe9"];
 var star_vx = [5, 4.5, 4.0, 3.5, 3.0, 2.5];
 var star_vy = [10, 9, 8, 7, 6, 5];
 var num_stars = 6;
